@@ -1069,6 +1069,43 @@ function vData() {
   elView.appendChild(el("div",{class:"btnrow"},[
     el("button",{class:"btn bad",type:"button",onclick:restore},["Replace everything with this backup"])
   ]));
+
+  elView.appendChild(el("h3",{text:"Start over"}));
+  elView.appendChild(el("p",{text:
+    "Erases every record on this phone and puts the fake test records back. Use it for a clean slate while you are trying things out, and once more to clear the test people away before you start entering real ones."}));
+  elView.appendChild(el("p",{text:
+    "Send yourself a backup first if there is anything on here worth keeping. This cannot be undone."}));
+  var wipeList = el("ul",{class:"ticks"});
+  wipeList.appendChild(el("li",{},[
+    el("label",{for:"wipe-ok"},[
+      el("input",{type:"checkbox",id:"wipe-ok"}),
+      el("span",{text:"Yes, erase everything on this phone"})
+    ])
+  ]));
+  elView.appendChild(wipeList);
+  elView.appendChild(el("div",{class:"btnrow"},[
+    el("button",{class:"btn bad",type:"button",onclick:startOver},["Erase and start over"])
+  ]));
+}
+
+/* Erase this phone and lay the seed down again. There has to be a way to do
+   this from inside the app: seedOnce() only runs when the seeded flag is
+   missing, so a phone that has opened the app even once never picks up a
+   change to the seed, and nothing else in here can clear it. */
+function startOver() {
+  var box = document.getElementById("wipe-ok");
+  if (!box || !box.checked) {
+    say("Tick the box first. Nothing has been erased.", true);
+    if (box) box.focus();
+    return;
+  }
+  COLLECTIONS.forEach(function (c) { data[c] = []; save(c); });
+  Store.flag("seeded", "");
+  seedOnce();
+  render();
+  say("Erased, and the test records are back. " + data.people.length + " people and "
+      + data.meetings.length + " meetings on this phone.");
+  document.getElementById("main").focus();
 }
 function backupText() {
   var o = { format:"ivc-backup-v1", madeAt:new Date().toISOString() };
