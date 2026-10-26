@@ -1193,7 +1193,11 @@ function vHelp() {
 
   elView.appendChild(el("h3",{text:"What is already in here"}));
   elView.appendChild(el("p",{text:
-    "Rod McLin, carried over from the 2026 consumers spreadsheet, and the August and September 2026 meetings. Those two months were counted as totals only, before individual records began, so they carry a headcount and no names. Those people cannot be recovered as individuals."}));
+    "Five made-up people - Daffy Duck, Mighty Mouse, Betty Boop, Yogi Bear and Minnie Mouse - so there is something to practise on. They are not real and none of their details belong to anybody. Delete them from the People screen when you are done, or leave them and work around them."}));
+  elView.appendChild(el("p",{text:
+    "Three meetings. August and September 2026 were counted as monthly totals only, before individual records began, so they carry a headcount and no names, and those people cannot be recovered as individuals. The October one is there to take practice attendance on."}));
+  elView.appendChild(el("p",{text:
+    "No real consumer records ship with the app. Everybody real is entered by hand, on the phone that will keep them."}));
 
   elView.appendChild(el("h3",{text:"What this does not do yet"}));
   var ul2 = el("ul");
@@ -1236,17 +1240,73 @@ document.addEventListener("keydown", function (e) {
 function seedOnce() {
   if (Store.flag("seeded") === "yes") return;
   if (data.people.length || data.meetings.length) { Store.flag("seeded","yes"); return; }
-  data.people = [{
-    id:"IVC-0001", firstName:"Rod", lastName:"McLin", preferredName:"",
-    phone:"812-243-1924", email:"", address:"6381 N Henderson Street",
-    city:"Terre Haute", state:"IN", zip:"47805", county:"Vigo",
-    visionStatus:"", visionYear:"", cause:"", dob:"1961-01-21",
-    gender:"", ethnicity:"", race:"", hearing:"", diabetes:"", living:"",
-    referral:"", personType:"Consumer", recordStatus:"Active",
-    consent:"", storyRelease:"", lowVisionAids:"Video magnifier", dailyLivingAids:"",
-    notes:"Carried over from the 2026 consumers spreadsheet. Originals kept: name written 'Rod MCLin'; city field held 'Terre Haute IN 47805'; 'contact 411' read as phone; the 'age range' column actually held a date of birth; low vision aids read 'e video magnifier' - confirm the leading e; also recorded under other: talking book application. County inferred from the address. Vision status, demographics and consent were never collected and still need asking.",
-    firstContact:"2026-08-01", updatedAt:new Date().toISOString()
-  }];
+  /* Fake records for testing only. Cartoon names, 555 phone numbers and
+     example.com addresses, all reserved for fiction, so nothing here belongs
+     to a real person. Real consumer records are entered by hand on each phone
+     and must never be written into this file -- it is published publicly.
+     IDs start at IVC-9001 so they never collide with real ones. */
+  data.people = [
+    { id:"IVC-9001", firstName:"Daffy", lastName:"Duck", preferredName:"",
+      phone:"812-555-0101", email:"daffy.duck@example.com", address:"100 Cartoon Lane",
+      city:"Terre Haute", state:"IN", zip:"47802", county:"Vigo",
+      visionStatus:"Legally blind", visionYear:"2014", cause:"Macular degeneration",
+      dob:"1948-04-17", gender:"Male", ethnicity:"Not Hispanic or Latino", race:"White",
+      hearing:"", diabetes:"", living:"Private residence - with others",
+      referral:"Eye care provider", personType:"Consumer", recordStatus:"Active",
+      consent:"Yes", storyRelease:"Yes", lowVisionAids:"Video magnifier",
+      dailyLivingAids:"Talking clock",
+      notes:"Test record. Not a real person.",
+      firstContact:"2025-01-15", updatedAt:new Date().toISOString() },
+
+    { id:"IVC-9002", firstName:"Mighty", lastName:"Mouse", preferredName:"",
+      phone:"812-555-0102", email:"mighty.mouse@example.com", address:"200 Cartoon Lane",
+      city:"Terre Haute", state:"IN", zip:"47803", county:"Vigo",
+      visionStatus:"Totally blind", visionYear:"2009", cause:"Retinitis pigmentosa",
+      dob:"1979-11-02", gender:"Male", ethnicity:"Not Hispanic or Latino",
+      race:"Black or African American",
+      hearing:"", diabetes:"", living:"Private residence - alone",
+      referral:"Vocational rehabilitation", personType:"Consumer", recordStatus:"Active",
+      consent:"Yes", storyRelease:"No", lowVisionAids:"Screen reader",
+      dailyLivingAids:"White cane",
+      notes:"Test record. Not a real person.",
+      firstContact:"2025-06-02", updatedAt:new Date().toISOString() },
+
+    { id:"IVC-9003", firstName:"Betty", lastName:"Boop", preferredName:"",
+      phone:"812-555-0103", email:"betty.boop@example.com", address:"300 Cartoon Lane",
+      city:"Terre Haute", state:"IN", zip:"47802", county:"Vigo",
+      visionStatus:"Severe visual impairment", visionYear:"2021", cause:"Glaucoma",
+      dob:"1955-08-23", gender:"Female", ethnicity:"Not Hispanic or Latino", race:"White",
+      hearing:"", diabetes:"", living:"Senior housing or community",
+      referral:"Another IVC consumer", personType:"Consumer", recordStatus:"Active",
+      consent:"Yes", storyRelease:"Declined to answer", lowVisionAids:"Handheld magnifier",
+      dailyLivingAids:"",
+      notes:"Test record. Not a real person.",
+      firstContact:"2026-02-18", updatedAt:new Date().toISOString() },
+
+    { id:"IVC-9004", firstName:"Yogi", lastName:"Bear", preferredName:"",
+      phone:"812-555-0104", email:"", address:"400 Cartoon Lane",
+      city:"Brazil", state:"IN", zip:"47834", county:"Clay",
+      visionStatus:"Legally blind", visionYear:"2019", cause:"Diabetic retinopathy",
+      dob:"1963-02-09", gender:"Male", ethnicity:"Not Hispanic or Latino",
+      race:"Two or more races",
+      hearing:"", diabetes:"", living:"Private residence - with others",
+      referral:"Physician or clinic", personType:"Consumer", recordStatus:"Active",
+      consent:"No", storyRelease:"No", lowVisionAids:"", dailyLivingAids:"Talking glucose meter",
+      notes:"Test record. Not a real person. Consent not given, so this one should be left out of anything that goes to a funder.",
+      firstContact:"2026-08-01", updatedAt:new Date().toISOString() },
+
+    { id:"IVC-9005", firstName:"Minnie", lastName:"Mouse", preferredName:"",
+      phone:"812-555-0105", email:"minnie.mouse@example.com", address:"500 Cartoon Lane",
+      city:"Terre Haute", state:"IN", zip:"47805", county:"Vigo",
+      visionStatus:"Not visually impaired", visionYear:"", cause:"",
+      dob:"1971-05-30", gender:"Female", ethnicity:"Hispanic or Latino", race:"White",
+      hearing:"", diabetes:"", living:"Private residence - with others",
+      referral:"Family or friend", personType:"Family member or caregiver",
+      recordStatus:"Active",
+      consent:"Yes", storyRelease:"Yes", lowVisionAids:"", dailyLivingAids:"",
+      notes:"Test record. Not a real person. Here so you can see a caregiver, not a consumer, in the list.",
+      firstContact:"2026-10-05", updatedAt:new Date().toISOString() }
+  ];
   data.meetings = [
     { id:"M-2026-0001", date:"2026-08-01", type:"Support group meeting", topic:"",
       format:"In person", location:"", speaker:"", speakerOrg:"", volunteerHours:"",
@@ -1257,6 +1317,10 @@ function seedOnce() {
       format:"In person", location:"", speaker:"", speakerOrg:"", volunteerHours:"",
       legacyHeadcount:16,
       notes:"Counted as a monthly total only. Reconciles at 16 across gender, race and age.",
+      enteredAt:new Date().toISOString() },
+    { id:"M-2026-0003", date:"2026-10-07", type:"Support group meeting", topic:"Trying out the app",
+      format:"In person", location:"", speaker:"", speakerOrg:"", volunteerHours:"",
+      notes:"A current meeting to practise taking attendance on. The August and September rows are totals only and warn you off. Delete this one once you are done testing.",
       enteredAt:new Date().toISOString() }
   ];
   save("people"); save("meetings");

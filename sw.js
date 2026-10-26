@@ -1,7 +1,7 @@
 /* IVC Records service worker.
    Cache-first for the app shell so the app opens with no signal.
    Bump CACHE when index.html changes, or phones keep serving the old copy. */
-var CACHE = "ivc-records-v2";
+var CACHE = "ivc-records-v3";
 var SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", function (e) {
