@@ -1,0 +1,17 @@
+{
+  "name": "Illiana Vision Connection Records",
+  "short_name": "IVC Records",
+  "description": "Consumer, meeting, attendance and survey records for Illiana Vision Connection. Works offline; data stays on this device.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#12161d",
+  "lang": "en",
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
