@@ -1,0 +1,23 @@
+# This repository is PUBLIC and contains only the app.
+# Consumer records live in the parent folder and must never be committed.
+# If any of these ever appear here, something has gone wrong — stop and check.
+
+*.xlsx
+*.xls
+*.csv
+*.docx
+*.doc
+*.pdf
+*.mp3
+*.m4a
+
+# Local backups exported from the app — these DO contain consumer records.
+ivc-backup*.json
+ivc-backup*.txt
+ivc-*.csv
+
+# Noise
+.DS_Store
+Thumbs.db
+desktop.ini
+node_modules/
