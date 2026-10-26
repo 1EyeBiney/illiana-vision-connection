@@ -24,22 +24,22 @@ transmitted anywhere.
 
 ## Publishing to GitHub Pages
 
+The repository is `1EyeBiney/illiana-vision-connection`, public, with the app on
+`main`. To serve it, turn Pages on:
+
 ```sh
-gh repo create ivc-records --public --source=. --remote=origin --push
+gh api -X POST repos/1EyeBiney/illiana-vision-connection/pages   -f "source[branch]=main" -f "source[path]=/"
 ```
 
-Then in the repository: **Settings → Pages → Source: Deploy from a branch →
+Or in the repository: **Settings → Pages → Source: Deploy from a branch →
 `main` / `(root)` → Save**.
 
-The app appears at `https://1eyebiney.github.io/ivc-records/` within a minute or two.
-HTTPS is required for the service worker, and GitHub Pages provides it.
-
-If you prefer the web UI: create the repo, upload these five files to the root, then
-set Pages as above.
+The app appears at `https://1eyebiney.github.io/illiana-vision-connection/` within a
+minute or two. HTTPS is required for the service worker, and GitHub Pages provides it.
 
 ## Updating it
 
-Edit `index.html`, **bump `CACHE` in `sw.js`** (`ivc-records-v1` → `v2`), commit, push.
+Edit `index.html`, **bump `CACHE` in `sw.js`** (`ivc-records-v2` → `v3`), commit, push.
 Without the version bump, phones keep serving the copy they already cached and nobody
 sees the change.
 
