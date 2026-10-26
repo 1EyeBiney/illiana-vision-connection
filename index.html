@@ -347,6 +347,12 @@ function today() {
   return new Date(d.getTime() - m*60000).toISOString().slice(0,10);
 }
 function nameOf(p) { return p ? (esc(p.preferredName) || esc(p.firstName)) + " " + esc(p.lastName) : "Unknown"; }
+/* Sort people by the name the list actually reads out -- preferred name if there
+   is one, otherwise first name. Sorting by surname while announcing "Danny Smith"
+   means hunting for a name you cannot hear, and on the attendance screen, in a
+   room, that is the whole job. Same order in every list so the order is never a
+   surprise. */
+function byCallingName(a, b) { return nameOf(a).toLowerCase().localeCompare(nameOf(b).toLowerCase()); }
 function byId(coll, id) {
   for (var i=0;i<data[coll].length;i++) if (data[coll][i].id === id) return data[coll][i];
   return null;
@@ -363,7 +369,8 @@ function val(id) { var n = document.getElementById(id); return n ? String(n.valu
 
 function rowSelect(id, label, options, value, o) {
   o = o || {};
-  var s = el("select", { id:id, name:id });
+  var s = el("select", { id:id, name:id,
+                         "aria-describedby": o.hint ? id + "-hint" : null });
   s.appendChild(el("option", { value:"", text:o.blank || "— not recorded —" }));
   options.forEach(function (opt) {
     var v = typeof opt === "string" ? opt : opt.v;
@@ -372,7 +379,7 @@ function rowSelect(id, label, options, value, o) {
   });
   return el("div", { class:"row" }, [
     el("label", { for:id }, [label, o.required ? el("span",{class:"req",text:" *"}) : null]),
-    o.hint ? el("span", { class:"hint", text:o.hint }) : null, s
+    o.hint ? el("span", { class:"hint", id:id+"-hint", "aria-hidden":"true", text:o.hint }) : null, s
   ]);
 }
 function rowText(id, label, value, o) {
@@ -383,9 +390,10 @@ function rowText(id, label, value, o) {
     n = el("input", { id:id, name:id, type:o.type || "text", value:esc(value),
                       inputmode:o.inputmode || null, autocomplete:o.autocomplete || null });
   }
+  if (o.hint) n.setAttribute("aria-describedby", id + "-hint");
   return el("div", { class:"row" }, [
     el("label", { for:id }, [label, o.required ? el("span",{class:"req",text:" *"}) : null]),
-    o.hint ? el("span", { class:"hint", text:o.hint }) : null, n
+    o.hint ? el("span", { class:"hint", id:id+"-hint", "aria-hidden":"true", text:o.hint }) : null, n
   ]);
 }
 
@@ -541,7 +549,7 @@ function vAttendance() {
     elView.appendChild(el("p",{class:"empty",text:"Nobody on file yet. Add a person first."}));
   } else {
     var list = el("ul",{class:"ticks"});
-    data.people.slice().sort(function(a,b){ return esc(a.lastName).localeCompare(esc(b.lastName)); })
+    data.people.slice().sort(byCallingName)
       .forEach(function (p) {
         var cid = "att-" + p.id;
         list.appendChild(el("li",{},[
@@ -595,7 +603,7 @@ function vPeople() {
   if (!data.people.length) { elView.appendChild(el("p",{class:"empty",text:"Nobody on file yet."})); return; }
   elView.appendChild(el("h3",{text:data.people.length + (data.people.length===1?" person":" people") + " on file"}));
   var ul = el("ul",{class:"cards"});
-  data.people.slice().sort(function(a,b){ return esc(a.lastName).localeCompare(esc(b.lastName)); })
+  data.people.slice().sort(byCallingName)
     .forEach(function (p) {
       var visits = data.attendance.filter(function(a){ return a.personId === p.id; }).length;
       ul.appendChild(el("li",{class:"card"},[
@@ -786,7 +794,7 @@ function vSurveys() {
   var f = el("form",{id:"survey-form",novalidate:true,
     onsubmit:function(e){ e.preventDefault(); saveSurvey(); }});
   f.appendChild(el("h3",{id:"sf-head",tabindex:"-1",text:"Record a response"}));
-  var people = data.people.slice().sort(function(a,b){ return esc(a.lastName).localeCompare(esc(b.lastName)); })
+  var people = data.people.slice().sort(byCallingName)
     .map(function (p) { return { v:p.id, t:nameOf(p) + " (" + p.id + ")" }; });
   f.appendChild(rowSelect("s-person","Who",people,"",{required:true,blank:"— choose a person —"}));
   f.appendChild(rowSelect("s-wave","Which round",WAVES,"Baseline",{required:true}));
@@ -875,7 +883,9 @@ function engagement() {
 function vContacts() {
   elView.appendChild(el("h2",{text:"Contacts and services"}));
   elView.appendChild(el("p",{class:"lede",text:
-    "One line every time we do something for somebody: an information and referral, peer support, a bit of technology help. Attendance says who was in the room. This says what they got, and it is what turns a list of names into a case for funding."}));
+    "Not the Contacts app on your phone, and not contact cards. This is a service log: one line every time we do something for somebody — an information and referral, peer support, a bit of technology help."}));
+  elView.appendChild(el("p",{class:"lede",text:
+    "Attendance says who was in the room. This says what they got, and it is what turns a list of names into a case for funding."}));
 
   if (!data.people.length) {
     elView.appendChild(el("p",{class:"empty",text:"Add a person before logging a contact."}));
@@ -886,7 +896,7 @@ function vContacts() {
     onsubmit:function(e){ e.preventDefault(); saveContact(); }});
   f.appendChild(el("h3",{id:"cf-head",tabindex:"-1",text:"Log a contact"}));
 
-  var people = data.people.slice().sort(function(a,b){ return esc(a.lastName).localeCompare(esc(b.lastName)); })
+  var people = data.people.slice().sort(byCallingName)
     .map(function (p) { return { v:p.id, t:nameOf(p) + " (" + p.id + ")" }; });
   f.appendChild(rowSelect("c-person","Who",people,"",{required:true,blank:"— choose a person —"}));
   f.appendChild(rowSelect("c-service","What we gave them",SERVICE,"Information and referral",
@@ -1180,14 +1190,22 @@ function vHelp() {
     "Do this once. Afterwards it opens like an app and works with no signal at all."}));
   var ol = el("ol",{class:"steps"});
   ["Open this page in Safari. It has to be Safari — Chrome on an iPhone cannot do this step.",
-   "Find the Share button. With VoiceOver, flick right along the bottom bar until you hear Share.",
-   "Flick right through the list until you hear Add to Home Screen, then double tap.",
-   "Hear Add and double tap it. The icon lands on your home screen called IVC Records.",
-   "Open it from there from now on, not from Safari. That is what keeps your records safe and lets it work offline."
+   "Find the page menu button, near the address field. Recent Safari tucks the Share button inside it instead of leaving it on the bottom bar.",
+   "Open that menu and find Share, then double tap.",
+   "The share sheet opens. Flick right all the way to the bottom of the first list, past the apps and the usual items, to the very last button, called More. Double tap it.",
+   "Add to Home Screen is in that list. Double tap it, then double tap Add.",
+   "An icon called IVC Records lands on your home screen.",
+   "Open it from there from now on, not from Safari. That is what keeps your records and lets it work offline."
   ].forEach(function (t) { ol.appendChild(el("li",{text:t})); });
   elView.appendChild(ol);
+  elView.appendChild(el("p",{text:
+    "Apple moves this around between Safari versions. If what you hear does not match these steps, the thing to hunt for is Share, and then More at the very bottom of it. Tell Brian what you actually heard and he will fix these words."}));
 
   elView.appendChild(el("h3",{text:"Attendance and Contacts are different things"}));
+  elView.appendChild(el("p",{text:
+    "First, what Contacts here is not. It is nothing to do with the Contacts app on your iPhone, and there are no contact cards in it. Nobody's phone book is involved."}));
+  elView.appendChild(el("p",{text:
+    "A contact here means one occasion on which we did something for somebody, written down. Think of it as a service log. Danny ran it this way at the WILL Center: every time you help a person, that is one line — who it was, what you gave them, how long it took, what it was about."}));
   elView.appendChild(el("p",{text:
     "Attendance records who was in the room. Contacts records what we actually gave somebody — an information and referral, peer support, help with a piece of technology — whether that happened at a meeting or on the phone on a Tuesday."}));
   elView.appendChild(el("p",{text:
